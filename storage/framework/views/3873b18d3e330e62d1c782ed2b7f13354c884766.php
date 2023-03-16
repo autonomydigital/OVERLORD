@@ -5,6 +5,9 @@
     <link href="<?php echo e(URL::asset('assets/libs/jsvectormap/jsvectormap.min.css')); ?>" rel="stylesheet">
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>
+<script>
+    var messages = <?php echo json_encode($messages, 15, 512) ?>;
+</script>
     <?php $__env->startComponent('components.breadcrumb'); ?>
         <?php $__env->slot('li_1'); ?>
             Overlord
@@ -13,7 +16,7 @@
             Whitsunday Web Analytics
         <?php $__env->endSlot(); ?>
     <?php echo $__env->renderComponent(); ?>
-
+    <div id="chat_user_info" data-user-id="<?php echo e(Auth::id()); ?>" style="display:none;"></div>
     <div class="row">
         <div class="col-xxl-5">
             <div class="d-flex flex-column h-100">
@@ -21,37 +24,342 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body p-0">
-                                <div class="alert alert-warning border-0 rounded-0 m-0 d-flex align-items-center"
-                                    role="alert">
-                                    <i data-feather="alert-triangle" class="text-warning me-2 icon-sm"></i>
-                                    <div class="flex-grow-1 text-truncate">
-                                        Your free trial expired in <b>17</b> days.
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <a href="<?php echo e(URL::asset('/pages-pricing')); ?>"
-                                            class="text-reset text-decoration-underline"><b>Upgrade</b></a>
-                                    </div>
-                                </div>
 
-                                <div class="row align-items-end">
-                                    <div class="col-sm-8">
-                                        <div class="p-3">
-                                            <p class="fs-20 lh-base">Upgrade your plan from a <span
-                                                    class="fw-semibold">Free
-                                                    trial</span>, to ‘Premium Plan’ <i class="mdi mdi-arrow-right"></i></p>
-                                            <div class="mt-3">
-                                                <a href="<?php echo e(URL::asset('/pages-pricing')); ?>" class="btn btn-secondary">Upgrade Account!</a>
+                                <!-- START CHAT MODULE -->
+
+                                <div class="user-chat w-100 overflow-hidden">
+
+                                    <div class="chat-content d-lg-flex">
+                                        <!-- start chat conversation section -->
+                                        <div class="w-100 overflow-hidden position-relative">
+                                            <!-- conversation user -->
+                                            <div class="position-relative">
+                    
+                                                <!-- CHAT MODULE Start -->
+                                                <div class="position-relative" id="users-chat">
+                                                    <div class="p-3 user-chat-topbar">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-sm-4 col-8">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="flex-shrink-0 d-block d-lg-none me-3">
+                                                                        <a href="javascript: void(0);" class="user-chat-remove fs-18 p-1"><i class="ri-arrow-left-s-line align-bottom"></i></a>
+                                                                    </div>
+                                                                    <div class="flex-grow-1 overflow-hidden">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
+                                                                                <img src="<?php echo e(URL::asset('assets/images/users/avatar-2.jpg')); ?>" class="rounded-circle avatar-xs" alt="">
+                                                                                <span class="user-status"></span>
+                                                                            </div>
+                                                                            <div class="flex-grow-1 overflow-hidden">
+                                                                                <h5 class="text-truncate mb-0 fs-16"><a class="text-reset username" data-bs-toggle="offcanvas" href="#userProfileCanvasExample" aria-controls="userProfileCanvasExample">Lisa Parker</a></h5>
+                                                                                <p class="text-truncate text-muted mb-0 userStatus"><span>Online</span></p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-8 col-4">
+                                                                <ul class="list-inline user-chat-nav text-end mb-0">
+                                                                    <li class="list-inline-item m-0">
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-ghost-secondary btn-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <i data-feather="search" class="icon-sm"></i>
+                                                                            </button>
+                                                                            <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
+                                                                                <div class="p-2">
+                                                                                    <div class="search-box">
+                                                                                        <input type="text" class="form-control bg-light border-light" placeholder="Search here..." onkeyup="searchMessages()" id="searchMessage">
+                                                                                        <i class="ri-search-2-line search-icon"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                    
+                                                                    <li class="list-inline-item d-none d-lg-inline-block m-0">
+                                                                        <button type="button" class="btn btn-ghost-secondary btn-icon" data-bs-toggle="offcanvas" data-bs-target="#userProfileCanvasExample" aria-controls="userProfileCanvasExample">
+                                                                            <i data-feather="info" class="icon-sm"></i>
+                                                                        </button>
+                                                                    </li>
+                    
+                                                                    <li class="list-inline-item m-0">
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-ghost-secondary btn-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <i data-feather="more-vertical" class="icon-sm"></i>
+                                                                            </button>
+                                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                                <a class="dropdown-item d-block d-lg-none user-profile-show" href="#"><i class="ri-user-2-fill align-bottom text-muted me-2"></i> View Profile</a>
+                                                                                <a class="dropdown-item" href="#"><i class="ri-inbox-archive-line align-bottom text-muted me-2"></i> Archive</a>
+                                                                                <a class="dropdown-item" href="#"><i class="ri-mic-off-line align-bottom text-muted me-2"></i> Muted</a>
+                                                                                <a class="dropdown-item" href="#"><i class="ri-delete-bin-5-line align-bottom text-muted me-2"></i> Delete</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                    
+                                                    </div>
+                                                    <!-- end chat user head -->
+                                                    <div class="chat-conversation p-3 p-lg-4 " id="chat-conversation" data-simplebar>
+                                                        <div id="elmLoader">
+                                                            <div class="spinner-border text-primary avatar-sm" role="status">
+                                                                <span class="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        </div>
+                                                        <ul class="list-unstyled chat-conversation-list" id="users-conversation">
+                    
+                                                        </ul>
+                                                        <!-- end chat-conversation-list -->
+                                                    </div>
+                                                    <div class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade show " id="copyClipBoard" role="alert">
+                                                        Message copied
+                                                    </div>
+                                                </div>
+                    
+                                                <div class="position-relative" id="channel-chat">
+                                                    <div class="p-3 user-chat-topbar">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-sm-4 col-8">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="flex-shrink-0 d-block d-lg-none me-3">
+                                                                        <a href="javascript: void(0);" class="user-chat-remove fs-18 p-1"><i class="ri-arrow-left-s-line align-bottom"></i></a>
+                                                                    </div>
+                                                                    <div class="flex-grow-1 overflow-hidden">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
+                                                                                <img src="<?php echo e(URL::asset('assets/images/users/avatar-2.jpg')); ?>" class="rounded-circle avatar-xs" alt="">
+                                                                            </div>
+                                                                            <div class="flex-grow-1 overflow-hidden">
+                                                                                <h5 class="text-truncate mb-0 fs-16"><a class="text-reset username" data-bs-toggle="offcanvas" href="#userProfileCanvasExample" aria-controls="userProfileCanvasExample">Lisa Parker</a></h5>
+                                                                                <p class="text-truncate text-muted fs-14 mb-0 userStatus"><small>24 Members</small></p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-8 col-4">
+                                                                <ul class="list-inline user-chat-nav text-end mb-0">
+                                                                    <li class="list-inline-item m-0">
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-ghost-secondary btn-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <i data-feather="search" class="icon-sm"></i>
+                                                                            </button>
+                                                                            <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
+                                                                                <div class="p-2">
+                                                                                    <div class="search-box">
+                                                                                        <input type="text" class="form-control bg-light border-light" placeholder="Search here..." onkeyup="searchMessages()" id="searchMessage">
+                                                                                        <i class="ri-search-2-line search-icon"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                    
+                                                                    <li class="list-inline-item d-none d-lg-inline-block m-0">
+                                                                        <button type="button" class="btn btn-ghost-secondary btn-icon" data-bs-toggle="offcanvas" data-bs-target="#userProfileCanvasExample" aria-controls="userProfileCanvasExample">
+                                                                            <i data-feather="info" class="icon-sm"></i>
+                                                                        </button>
+                                                                    </li>
+                    
+                                                                    <li class="list-inline-item m-0">
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-ghost-secondary btn-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <i data-feather="more-vertical" class="icon-sm"></i>
+                                                                            </button>
+                                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                                <a class="dropdown-item d-block d-lg-none user-profile-show" href="#"><i class="ri-user-2-fill align-bottom text-muted me-2"></i> View Profile</a>
+                                                                                <a class="dropdown-item" href="#"><i class="ri-inbox-archive-line align-bottom text-muted me-2"></i> Archive</a>
+                                                                                <a class="dropdown-item" href="#"><i class="ri-mic-off-line align-bottom text-muted me-2"></i> Muted</a>
+                                                                                <a class="dropdown-item" href="#"><i class="ri-delete-bin-5-line align-bottom text-muted me-2"></i> Delete</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                    
+                                                    </div>
+                                                    <!-- end chat user head -->
+                                                    <div class="chat-conversation p-3 p-lg-4" id="chat-conversation" data-simplebar>
+                                                        <ul class="list-unstyled chat-conversation-list" id="channel-conversation">
+                                                        </ul>
+                                                        <!-- end chat-conversation-list -->
+                    
+                                                    </div>
+                                                    <div class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade show " id="copyClipBoardChannel" role="alert">
+                                                        Message copied
+                                                    </div>
+                                                </div>
+                    
+                                                <!-- end chat-conversation -->
+                    
+                                                <div class="chat-input-section p-3 p-lg-4">
+                    
+                                                    <form id="chatinput-form" enctype="multipart/form-data">
+                                                        <div class="row g-0 align-items-center">
+                                                            <div class="col-auto">
+                                                                <div class="chat-input-links me-2">
+                                                                    <div class="links-list-item">
+                                                                        <button type="button" class="btn btn-link text-decoration-none emoji-btn" id="emoji-btn">
+                                                                            <i class="bx bx-smile align-middle"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                    
+                                                            <div class="col">
+                                                                <div class="chat-input-feedback">
+                                                                    Please Enter a Message
+                                                                </div>
+                                                                <input type="text" class="form-control chat-input bg-light border-light" id="chat-input" placeholder="Type your message..." autocomplete="off">
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <div class="chat-input-links ms-2">
+                                                                    <div class="links-list-item">
+                                                                        <button type="submit" class="btn btn-success chat-send waves-effect waves-light">
+                                                                            <i class="ri-send-plane-2-fill align-bottom"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                    
+                                                        </div>
+                                                    </form>
+                                                </div>
+                    
+                                                <div class="replyCard">
+                                                    <div class="card mb-0">
+                                                        <div class="card-body py-3">
+                                                            <div class="replymessage-block mb-0 d-flex align-items-start">
+                                                                <div class="flex-grow-1">
+                                                                    <h5 class="conversation-name"></h5>
+                                                                    <p class="mb-0"></p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <button type="button" id="close_toggle" class="btn btn-sm btn-link mt-n2 me-n3 fs-18">
+                                                                        <i class="bx bx-x align-middle"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-4">
-                                        <div class="px-3">
-                                            <img src="<?php echo e(URL::asset('assets/images/user-illustarator-2.png')); ?>" class="img-fluid" alt="">
+                                </div>
+                                <!-- END CHAT MODULE -->
+                               
+                            </div> <!-- end card-body-->
+                        </div>
+                    </div> <!-- end col-->
+                </div> <!-- end row-->
+
+                
+            </div>
+        </div> <!-- end col-->
+
+        <div class="col-xxl-7">
+            <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="fw-medium text-muted mb-0">Users</p>
+                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value"
+                                                data-target="28.05">0</span>k</h2>
+                                        <p class="mb-0 text-muted"><span class="badge bg-light text-success mb-0">
+                                                <i class="ri-arrow-up-line align-middle"></i> 16.24 %
+                                            </span> vs. previous month</p>
+                                    </div>
+                                    <div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-info rounded-circle fs-2">
+                                                <i data-feather="users" class="text-info"></i>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                            </div> <!-- end card-body-->
-                        </div>
+                            </div><!-- end card body -->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-md-6">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="fw-medium text-muted mb-0">Sessions</p>
+                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value"
+                                                data-target="97.66">0</span>k</h2>
+                                        <p class="mb-0 text-muted"><span class="badge bg-light text-danger mb-0">
+                                                <i class="ri-arrow-down-line align-middle"></i> 3.96 %
+                                            </span> vs. previous month</p>
+                                    </div>
+                                    <div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-info rounded-circle fs-2">
+                                                <i data-feather="activity" class="text-info"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                </div> <!-- end row-->
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="fw-medium text-muted mb-0">Avg. Visit Duration</p>
+                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value"
+                                                data-target="3">0</span>m
+                                            <span class="counter-value" data-target="40">0</span>sec
+                                        </h2>
+                                        <p class="mb-0 text-muted"><span class="badge bg-light text-danger mb-0">
+                                                <i class="ri-arrow-down-line align-middle"></i> 0.24 %
+                                            </span> vs. previous month</p>
+                                    </div>
+                                    <div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-info rounded-circle fs-2">
+                                                <i data-feather="clock" class="text-info"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-md-6">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="fw-medium text-muted mb-0">Bounce Rate</p>
+                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value"
+                                                data-target="33.48">0</span>%</h2>
+                                        <p class="mb-0 text-muted"><span class="badge bg-light text-success mb-0">
+                                                <i class="ri-arrow-up-line align-middle"></i> 7.05 %
+                                            </span> vs. previous month</p>
+                                    </div>
+                                    <div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-info rounded-circle fs-2">
+                                                <i data-feather="external-link" class="text-info"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div> <!-- end card-->
                     </div> <!-- end col-->
                 </div> <!-- end row-->
 
@@ -156,95 +464,7 @@
                         </div> <!-- end card-->
                     </div> <!-- end col-->
                 </div> <!-- end row-->
-            </div>
-        </div> <!-- end col-->
-
-        <div class="col-xxl-7">
-            <div class="row h-100">
-                <div class="col-xl-6">
-                    <div class="card card-height-100">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Live Users By Country</h4>
-                            <div class="flex-shrink-0">
-                                <button type="button" class="btn btn-soft-primary btn-sm">
-                                    Export Report
-                                </button>
-                            </div>
-                        </div><!-- end card header -->
-
-                        <!-- card body -->
-                        <div class="card-body">
-
-                            <div id="users-by-country" data-colors='["--vz-light"]' class="text-center"
-                                style="height: 252px"></div>
-
-                            <div class="table-responsive table-card mt-3">
-                                <table
-                                    class="table table-borderless table-sm table-centered align-middle table-nowrap mb-1">
-                                    <thead
-                                        class="text-muted border-dashed border border-start-0 border-end-0 bg-soft-light">
-                                        <tr>
-                                            <th>Duration (Secs)</th>
-                                            <th style="width: 30%;">Sessions</th>
-                                            <th style="width: 30%;">Views</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="border-0">
-                                        <tr>
-                                            <td>0-30</td>
-                                            <td>2,250</td>
-                                            <td>4,250</td>
-                                        </tr>
-                                        <tr>
-                                            <td>31-60</td>
-                                            <td>1,501</td>
-                                            <td>2,050</td>
-                                        </tr>
-                                        <tr>
-                                            <td>61-120</td>
-                                            <td>750</td>
-                                            <td>1,600</td>
-                                        </tr>
-                                        <tr>
-                                            <td>121-240</td>
-                                            <td>540</td>
-                                            <td>1,040</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!-- end card body -->
-                    </div><!-- end card -->
-                </div><!-- end col -->
-
-                <div class="col-xl-6">
-                    <div class="card card-height-100">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Sessions by Countries</h4>
-                            <div>
-                                <button type="button" class="btn btn-soft-secondary btn-sm">
-                                    ALL
-                                </button>
-                                <button type="button" class="btn btn-soft-primary btn-sm">
-                                    1M
-                                </button>
-                                <button type="button" class="btn btn-soft-secondary btn-sm">
-                                    6M
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div>
-                                <div id="countries_charts"
-                                    data-colors='["--vz-info", "--vz-info", "--vz-info", "--vz-info", "--vz-danger", "--vz-info", "--vz-info", "--vz-info", "--vz-info", "--vz-info"]'
-                                    class="apex-charts" dir="ltr"></div>
-                            </div>
-                        </div><!-- end card body -->
-                    </div><!-- end card -->
-                </div> <!-- end col-->
-
-            </div> <!-- end row-->
+            
         </div><!-- end col -->
     </div> <!-- end row-->
 
@@ -617,10 +837,20 @@
     </div><!-- end row -->
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('script'); ?>
+
+    
     <!-- apexcharts -->
     <script src="<?php echo e(URL::asset('/assets/libs/apexcharts/apexcharts.min.js')); ?>"></script>
     <script src="<?php echo e(URL::asset('assets/libs/jsvectormap/jsvectormap.min.js')); ?>"></script>
     
+
+    <script src="<?php echo e(URL::asset('assets/libs/glightbox/glightbox.min.js')); ?>"></script>
+
+    <!-- fgEmojiPicker js -->
+    <script src="<?php echo e(URL::asset('assets/libs/fg-emoji-picker/fg-emoji-picker.min.js')); ?>"></script>
+
+    <!-- chat init js -->
+    <script src="<?php echo e(URL::asset('assets/js/pages/chat.init.js')); ?>"></script>
 
     <!-- dashboard init -->
     <script src="<?php echo e(URL::asset('/assets/js/pages/dashboard-analytics.init.js')); ?>"></script>

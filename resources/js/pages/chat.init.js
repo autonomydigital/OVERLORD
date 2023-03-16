@@ -88,22 +88,22 @@ File: Chat init js
 
                 var messageCount = userData.messagecount ? '<a href="javascript: void(0);" class="unread-msg-user">' : '<a href="javascript: void(0);">'
                 var activeClass = userData.id === 1 ? "active" : "";
-                document.getElementById("userList").innerHTML +=
-                    '<li id="contact-id-' + userData.id + '" data-name="direct-message" class="' + activeClass + '">\
-                '+ messageCount + ' \
-                <div class="d-flex align-items-center">\
-                    <div class="flex-shrink-0 chat-user-img ' + userData.status + ' align-self-center me-2 ms-0">\
-                        <div class="avatar-xxs">\
-                        ' + isUserProfile + '\
-                        </div>\
-                    </div>\
-                    <div class="flex-grow-1 overflow-hidden">\
-                        <p class="text-truncate mb-0">' + userData.name + "</p>\
-                    </div>\
-                    " + isMessageCount + "\
-                </div>\
-            </a>\
-        </li>";
+        //         document.getElementById("userList").innerHTML +=
+        //             '<li id="contact-id-' + userData.id + '" data-name="direct-message" class="' + activeClass + '">\
+        //         '+ messageCount + ' \
+        //         <div class="d-flex align-items-center">\
+        //             <div class="flex-shrink-0 chat-user-img ' + userData.status + ' align-self-center me-2 ms-0">\
+        //                 <div class="avatar-xxs">\
+        //                 ' + isUserProfile + '\
+        //                 </div>\
+        //             </div>\
+        //             <div class="flex-grow-1 overflow-hidden">\
+        //                 <p class="text-truncate mb-0">' + userData.name + "</p>\
+        //             </div>\
+        //             " + isMessageCount + "\
+        //         </div>\
+        //     </a>\
+        // </li>";
             });
 
             // set channels list
@@ -378,79 +378,81 @@ File: Chat init js
         return msgHTML;
     }
 
+    var chatUrl = "{{ route('getChatMessages', ['userId' => $userId]) }}";
+
     function updateSelectedChat() {
         if (currentSelectedChat == "users") {
             document.getElementById("channel-chat").style.display = "none";
             document.getElementById("users-chat").style.display = "block";
-            getChatMessages(url + "chats.json");
+            getChatMessages(chatUrl);
         } else {
             document.getElementById("channel-chat").style.display = "block";
             document.getElementById("users-chat").style.display = "none";
-            getChatMessages(url + "chats.json");
+            getChatMessages(chatUrl);
         }
     }
     updateSelectedChat();
 
 
     //Chat Message
-    function getChatMessages(jsonFileUrl) {
-        getJSONFile(jsonFileUrl, function (err, data) {
-            if (err !== null) {
-                console.log("Something went wrong: " + err);
-            } else {
-                var chatsData =
-                    currentSelectedChat == "users" ? data[0].chats : data[0].channel_chat;
+   function getChatMessages(chatUrl) {
+  getJSON(chatUrl, function (err, data) {
+    if (err !== null) {
+        console.log("Something went wrong: " + err);
+    } else {
+        var chatsData =
+            currentSelectedChat == "users" ? data[0].chats : data[0].channel_chat;
 
-                document.getElementById(
-                    currentSelectedChat + "-conversation"
-                ).innerHTML = "";
-                var isContinue = 0;
-                chatsData.forEach(function (isChat, index) {
+        document.getElementById(
+            currentSelectedChat + "-conversation"
+        ).innerHTML = "";
+        var isContinue = 0;
+        chatsData.forEach(function (isChat, index) {
 
-                    if (isContinue > 0) {
-                        isContinue = isContinue - 1;
-                        return;
-                    }
-                    var isAlighn = isChat.from_id == userChatId ? " right" : " left";
-
-                    var user = usersList.find(function (list) {
-                        return list.id == isChat.to_id;
-                    });
-
-                    var msgHTML = '<li class="chat-list' + isAlighn + '" id=' + isChat.id + '>\
-                        <div class="conversation-list">';
-                    if (userChatId != isChat.from_id)
-                        msgHTML += '<div class="chat-avatar"><img src="' + user.profile + '" alt=""></div>';
-
-                    msgHTML += '<div class="user-chat-content">';
-                    msgHTML += getMsg(isChat.id, isChat.msg, isChat.has_images, isChat.has_files, isChat.has_dropDown);
-                    if (chatsData[index + 1] && isChat.from_id == chatsData[index + 1]["from_id"]) {
-                        isContinue = getNextMsgCounts(chatsData, index, isChat.from_id);
-                        msgHTML += getNextMsgs(chatsData, index, isChat.from_id, isContinue);
-                    }
-
-                    msgHTML +=
-                        '<div class="conversation-name"><span class="d-none name">'+user.name+'</span><small class="text-muted time">'+ isChat.datetime +
-                        '</small> <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span></div>';
-                    msgHTML += "</div>\
-                </div>\
-            </li>";
-
-                    document.getElementById(currentSelectedChat + "-conversation").innerHTML += msgHTML;
-                });
+            if (isContinue > 0) {
+                isContinue = isContinue - 1;
+                return;
             }
-            deleteMessage();
-            deleteChannelMessage();
-            deleteImage();
-            replyMessage();
-            replyChannelMessage();
-            copyMessage();
-            copyChannelMessage();
-            copyClipboard();
-            scrollToBottom("users-chat");
-            updateLightbox();
+            var isAlighn = isChat.from_id == userChatId ? " right" : " left";
+
+            var user =  isChat.to_id;
+            
+
+            var msgHTML = '<li class="chat-list' + isAlighn + '" id=' + isChat.id + '>\
+                <div class="conversation-list">';
+            if (userChatId != isChat.from_id)
+                msgHTML += '<div class="chat-avatar"><img src="' + user.profile + '" alt=""></div>';
+
+            msgHTML += '<div class="user-chat-content">';
+            msgHTML += getMsg(isChat.id, isChat.msg, isChat.has_images, isChat.has_files, isChat.has_dropDown);
+            if (chatsData[index + 1] && isChat.from_id == chatsData[index + 1]["from_id"]) {
+                isContinue = getNextMsgCounts(chatsData, index, isChat.from_id);
+                msgHTML += getNextMsgs(chatsData, index, isChat.from_id, isContinue);
+            }
+
+            msgHTML +=
+                '<div class="conversation-name"><span class="d-none name">' + user.name + '</span><small class="text-muted time">' + isChat.datetime +
+                '</small> <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span></div>';
+            msgHTML += "</div>\
+        </div>\
+    </li>";
+
+            document.getElementById(currentSelectedChat + "-conversation").innerHTML += msgHTML;
         });
     }
+    deleteMessage();
+    deleteChannelMessage();
+    deleteImage();
+    replyMessage();
+    replyChannelMessage();
+    copyMessage();
+    copyChannelMessage();
+    copyClipboard();
+    scrollToBottom("users-chat");
+    updateLightbox();
+  });
+}
+
 
     // GLightbox Popup
     function updateLightbox() {

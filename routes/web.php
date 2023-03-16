@@ -24,3 +24,6 @@ Route::post('/update-profile/{id}', [App\Http\Controllers\HomeController::class,
 Route::post('/update-password/{id}', [App\Http\Controllers\HomeController::class, 'updatePassword'])->name('updatePassword');
 
 Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+
+Route::get('/chat/1', 'App\Http\Controllers\ChatController@getChatMessages')->name('getChatMessages');
+
