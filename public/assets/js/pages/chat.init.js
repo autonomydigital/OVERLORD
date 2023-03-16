@@ -386,30 +386,21 @@ File: Chat init js
         if (currentSelectedChat == "users") {
             document.getElementById("channel-chat").style.display = "none";
             document.getElementById("users-chat").style.display = "block";
-            getChatMessages("/chat/1");
+            getChatMessages();
         } else {
             document.getElementById("channel-chat").style.display = "block";
             document.getElementById("users-chat").style.display = "none";
-            getChatMessages("/chat/1");
+            getChatMessages();
         }
     }
     updateSelectedChat();
 
-    function getChatMessages() {
-        // Use the messages variable to display chat messages
-        messages.forEach(function (isChat, index) {
-            // Display each chat message
-        });
-    }
 
     //Chat Message
     function getChatMessages() {
        
         messages.forEach(function (isChat, index) {
-              if (isContinue > 0) {
-                isContinue = isContinue - 1;
-                return;
-              }
+        
               var isAlighn = isChat.from_id == userChatId ? " right" : " left";
               var user =  isChat.to_id;
               var msgHTML = '<li class="chat-list' + isAlighn + '" id=' + isChat.id + '>\
@@ -430,16 +421,16 @@ File: Chat init js
             </li>";
               document.getElementById(currentSelectedChat + "-conversation").innerHTML += msgHTML;
             });
-            deleteMessage();
-            deleteChannelMessage();
-            deleteImage();
-            replyMessage();
-            replyChannelMessage();
-            copyMessage();
-            copyChannelMessage();
-            copyClipboard();
-            scrollToBottom("users-chat");
-            updateLightbox();
+            // deleteMessage();
+            // deleteChannelMessage();
+            // deleteImage();
+            // replyMessage();
+            // replyChannelMessage();
+            // copyMessage();
+            // copyChannelMessage();
+            // copyClipboard();
+            // scrollToBottom("users-chat");
+            // updateLightbox();
         
       }
 
