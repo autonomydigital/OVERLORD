@@ -379,8 +379,28 @@ File: Chat init js
         return msgHTML;
     }
 
-    const userIdElement = document.getElementById('chat_user_info');
-    const userId = userIdElement.dataset.userId;
+   const userIdElement = document.getElementById('chat_user_info');
+const userId = userIdElement.dataset.userId;
+
+var messages = [];
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4) {
+    if (xhr.status === 200) {
+      messages = JSON.parse(xhr.responseText);
+      console.log(messages);
+      //initChatUI();
+    } else {
+      console.error('Error:', xhr.status);
+    }
+  }
+};
+xhr.open('GET', '/chat/messages/' + userId);
+xhr.send();
+    
+
+
 
     function updateSelectedChat() {
         if (currentSelectedChat == "users") {

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ChatController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,5 +26,5 @@ Route::post('/update-password/{id}', [App\Http\Controllers\HomeController::class
 
 Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 
-Route::get('/chat/1', 'App\Http\Controllers\ChatController@getChatMessages')->name('getChatMessages');
+Route::get('/chat/messages/{userId}', [ChatController::class, 'getChatMessages'])->name('chat.messages');
 
